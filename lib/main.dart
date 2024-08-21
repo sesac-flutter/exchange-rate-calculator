@@ -12,7 +12,7 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Text('exchange_rate_calculator'),
+          child: Text('exchange_rate_calculator_test'),
         ),
       ),
     );
