@@ -1,22 +1,15 @@
+import 'package:exchange_rate_calculator/presentation/calculator_view_model.dart';
+import 'package:exchange_rate_calculator/util/enum/currency_code.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class CalculatorScreen extends StatefulWidget {
+class CalculatorScreen extends StatelessWidget {
   const CalculatorScreen({super.key});
 
   @override
-  State<CalculatorScreen> createState() => _CalculatorScreenState();
-}
-
-class _CalculatorScreenState extends State<CalculatorScreen> {
-  String _fromCurrency = 'USD';
-  String _toCurrency = 'EUR';
-  final TextEditingController _amountController = TextEditingController();
-  double _result = 0;
-
-  final List<String> _currencies = ['USD', 'EUR', 'JPY', 'GBP', 'KRW'];
-
-  @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<CalculatorViewModel>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('환율 계산기'),
@@ -30,24 +23,24 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               children: [
                 Expanded(
                   child: DropdownButton<String>(
-                    value: _fromCurrency,
-                    items: _currencies.map((String currency) {
+                    value: viewModel.fromCurrency.name.toUpperCase(),
+                    items: viewModel.currencies.map((String currency) {
                       return DropdownMenuItem<String>(
                         value: currency,
-                        child: Text(currency),
+                        child: Text(currency), // 이미 대문자 형태로 제공됨
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
-                      setState(() {
-                        _fromCurrency = newValue!;
-                      });
+                      viewModel.setFromCurrency(
+                        CurrencyCode.values.firstWhere((e) => e.name.toUpperCase() == newValue),
+                      );
                     },
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: TextField(
-                    controller: _amountController,
+                    controller: viewModel.amountController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       labelText: '계산할 금액',
@@ -63,17 +56,17 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               children: [
                 Expanded(
                   child: DropdownButton<String>(
-                    value: _toCurrency,
-                    items: _currencies.map((String currency) {
+                    value: viewModel.toCurrency.name.toUpperCase(),
+                    items: viewModel.currencies.map((String currency) {
                       return DropdownMenuItem<String>(
                         value: currency,
-                        child: Text(currency),
+                        child: Text(currency), // 이미 대문자 형태로 제공됨
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
-                      setState(() {
-                        _toCurrency = newValue!;
-                      });
+                      viewModel.setToCurrency(
+                        CurrencyCode.values.firstWhere((e) => e.name.toUpperCase() == newValue),
+                      );
                     },
                   ),
                 ),
@@ -84,13 +77,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: Colors.grey, // 테두리 색상
-                          width: 1.0, // 테두리 두께
+                          color: Colors.grey,
+                          width: 1.0,
                         ),
                       ),
                     ),
                     child: Text(
-                      '$_result $_toCurrency',
+                      '${viewModel.result.toStringAsFixed(2)} ${viewModel.toCurrency.name.toUpperCase()}',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
@@ -101,9 +94,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             ElevatedButton(
               child: const Text('계산하기'),
               onPressed: () {
-                setState(() {
-                  _result = double.parse(_amountController.text) * 1.2; // 예시 환율
-                });
+                viewModel.calculate();
               },
             ),
           ],
