@@ -1,20 +1,21 @@
+import 'package:exchange_rate_calculator/presentation/calculator_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('exchange_rate_calculator_commit_test'),
-        ),
+    return MaterialApp(
+      title: '환율 계산기',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: const CalculatorScreen(),
     );
   }
 }
